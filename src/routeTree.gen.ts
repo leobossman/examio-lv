@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CenasRouteImport } from './routes/cenas'
+import { Route as DueliRouteImport } from './routes/dueli'
+import { Route as MacibasRouteImport } from './routes/macibas'
+import { Route as SimulatorsRouteImport } from './routes/simulators'
+import { Route as VecakiemRouteImport } from './routes/vecakiem'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CenasRoute = CenasRouteImport.update({
+  id: '/cenas',
+  path: '/cenas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DueliRoute = DueliRouteImport.update({
+  id: '/dueli',
+  path: '/dueli',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MacibasRoute = MacibasRouteImport.update({
+  id: '/macibas',
+  path: '/macibas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulatorsRoute = SimulatorsRouteImport.update({
+  id: '/simulators',
+  path: '/simulators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VecakiemRoute = VecakiemRouteImport.update({
+  id: '/vecakiem',
+  path: '/vecakiem',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cenas': typeof CenasRoute
+  '/dueli': typeof DueliRoute
+  '/macibas': typeof MacibasRoute
+  '/simulators': typeof SimulatorsRoute
+  '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cenas': typeof CenasRoute
+  '/dueli': typeof DueliRoute
+  '/macibas': typeof MacibasRoute
+  '/simulators': typeof SimulatorsRoute
+  '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cenas': typeof CenasRoute
+  '/dueli': typeof DueliRoute
+  '/macibas': typeof MacibasRoute
+  '/simulators': typeof SimulatorsRoute
+  '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/cenas' | '/dueli' | '/macibas' | '/simulators' | '/vecakiem'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/cenas' | '/dueli' | '/macibas' | '/simulators' | '/vecakiem'
+  id:
+    | '__root__'
+    | '/'
+    | '/cenas'
+    | '/dueli'
+    | '/macibas'
+    | '/simulators'
+    | '/vecakiem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CenasRoute: typeof CenasRoute
+  DueliRoute: typeof DueliRoute
+  MacibasRoute: typeof MacibasRoute
+  SimulatorsRoute: typeof SimulatorsRoute
+  VecakiemRoute: typeof VecakiemRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cenas': {
+      id: '/cenas'
+      path: '/cenas'
+      fullPath: '/cenas'
+      preLoaderRoute: typeof CenasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dueli': {
+      id: '/dueli'
+      path: '/dueli'
+      fullPath: '/dueli'
+      preLoaderRoute: typeof DueliRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/macibas': {
+      id: '/macibas'
+      path: '/macibas'
+      fullPath: '/macibas'
+      preLoaderRoute: typeof MacibasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulators': {
+      id: '/simulators'
+      path: '/simulators'
+      fullPath: '/simulators'
+      preLoaderRoute: typeof SimulatorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/vecakiem': {
+      id: '/vecakiem'
+      path: '/vecakiem'
+      fullPath: '/vecakiem'
+      preLoaderRoute: typeof VecakiemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CenasRoute: CenasRoute,
+  DueliRoute: DueliRoute,
+  MacibasRoute: MacibasRoute,
+  SimulatorsRoute: SimulatorsRoute,
+  VecakiemRoute: VecakiemRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
