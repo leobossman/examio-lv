@@ -3,6 +3,7 @@ import { useState } from "react";
 import { GraduationCap, Swords, Timer, Layers, PenLine, Trophy } from "lucide-react";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { ExamCountdown } from "@/components/ExamCountdown";
 import { leaderboard, levels, programs, projected, subjects12, subjects9 } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
@@ -26,6 +27,7 @@ function Dashboard() {
     <AppShell>
       <PageTitle title="Sveiks, Lauri! 👋" sub="Līdz matemātikas CE atlikušas 47 dienas. Turpini tempu." />
 
+      <ExamCountdown />
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="card-surface p-6 lg:col-span-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-primary">

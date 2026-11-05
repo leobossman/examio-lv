@@ -88,6 +88,31 @@
   --gradient-fire: linear-gradient(135deg, oklch(0.66 0.23 36), oklch(0.74 0.18 55));
 }
 
+.dark {
+  --background: oklch(0.17 0.015 250);
+  --foreground: oklch(0.95 0.005 200);
+  --card: oklch(0.22 0.018 250);
+  --card-foreground: oklch(0.95 0.005 200);
+  --popover: oklch(0.22 0.018 250);
+  --popover-foreground: oklch(0.95 0.005 200);
+  --primary: oklch(0.82 0.15 196);
+  --primary-soft: oklch(0.32 0.06 196);
+  --secondary: oklch(0.27 0.015 250);
+  --secondary-foreground: oklch(0.95 0.005 200);
+  --muted: oklch(0.27 0.015 250);
+  --muted-foreground: oklch(0.7 0.02 220);
+  --accent: oklch(0.7 0.23 38);
+  --accent-soft: oklch(0.32 0.08 38);
+  --border: oklch(0.32 0.015 250);
+  --input: oklch(0.32 0.015 250);
+  --shadow-soft: 0 1px 2px oklch(0 0 0 / 30%), 0 8px 24px -12px oklch(0 0 0 / 50%);
+}
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; color: black !important; }
+}
+
 @layer base {
   * { border-color: var(--color-border); }
   body {

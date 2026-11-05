@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { LayoutDashboard, BookOpen, Swords, Timer, Users, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
+import { FocusTimer, ThemeToggle } from "./HeaderTools";
 
 const nav = [
   { to: "/", label: "Panelis", icon: LayoutDashboard },
@@ -29,8 +30,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent">🔥 14 dienas</span>
+          <div className="ml-auto flex items-center gap-2 md:gap-3">
+            <FocusTimer />
+            <ThemeToggle />
+            <span className="hidden sm:inline rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent">🔥 14 dienas</span>
             <span className="grid h-9 w-9 place-items-center rounded-full bg-muted text-sm font-bold">LB</span>
           </div>
         </div>
