@@ -1,0 +1,10 @@
+{
+  "name": "Examio",
+  "short_name": "Examio",
+  "lang": "lv",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#00CED1",
+  "icons": [{ "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }]
+}
