@@ -67,17 +67,17 @@ function Sim() {
           <div className="flex items-center gap-2 font-semibold text-primary"><Bot className="h-5 w-5" /> AI laika plānošanas analīze</div>
           <div className="mt-6 space-y-4">
             {parts.map((p, i) => {
-              const pct = Math.round((spent[i] / total) * 100);
+              const pct = Math.round(((spent[i] ?? 0) / total) * 100);
               return (
                 <div key={p.name} className="text-sm">
-                  <div className="mb-1 flex justify-between"><span>{p.name}</span><span>{pct}% (ieteicams {ideal[i]}%)</span></div>
-                  <div className="h-2 rounded-full bg-muted"><div className={`h-2 rounded-full ${Math.abs(pct - ideal[i]) > 10 ? "bg-accent" : "bg-primary"}`} style={{ width: `${pct}%` }} /></div>
+                  <div className="mb-1 flex justify-between"><span>{p.name}</span><span>{pct}% (ieteicams {(ideal[i] ?? 0)}%)</span></div>
+                  <div className="h-2 rounded-full bg-muted"><div className={`h-2 rounded-full ${Math.abs(pct - (ideal[i] ?? 0)) > 10 ? "bg-accent" : "bg-primary"}`} style={{ width: `${pct}%` }} /></div>
                 </div>
               );
             })}
           </div>
           <p className="mt-6 rounded-xl bg-primary-soft p-4 text-sm">
-            Kopā izmantoji {fmt(TOTAL - left)}. {spent[2] / total < 0.3 ? "3. daļai atvēli pārāk maz laika — tā dod visvairāk punktu. Nākamreiz 1. daļu pabeidz 45 minūtēs." : "Laiks sadalīts līdzsvaroti. Turpini tā!"}
+            Kopā izmantoji {fmt(TOTAL - left)}. {(spent[2] ?? 0) / total < 0.3 ? "3. daļai atvēli pārāk maz laika — tā dod visvairāk punktu. Nākamreiz 1. daļu pabeidz 45 minūtēs." : "Laiks sadalīts līdzsvaroti. Turpini tā!"}
           </p>
           <Button asChild variant="cta" className="mt-6 w-full"><Link to="/">Uz paneli</Link></Button>
         </div>
@@ -104,7 +104,7 @@ function Sim() {
           ))}
         </nav>
         <div className="space-y-4">
-          {parts[part].tasks.map((t, i) => (
+          {parts[part]!.tasks.map((t, i) => (
             <div key={t} className="card-surface p-5">
               <div className="text-xs font-semibold text-muted-foreground">{i + 1}. uzdevums</div>
               <div className="mt-1 font-medium">{t}</div>

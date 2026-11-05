@@ -23,7 +23,7 @@ function Parents() {
       <div className="grid gap-4 sm:grid-cols-3">
         {[
           ["Mācību laiks", `${Math.floor(totalMin / 60)} h ${totalMin % 60} min`],
-          ["Vidējais rezultāts", `${weekly[weekly.length - 1].score}%`],
+          ["Vidējais rezultāts", `${weekly[weekly.length - 1]!.score}%`],
           ["Atrisināti uzdevumi", "184"],
         ].map(([l, v]) => (
           <div key={l} className="card-surface p-5"><div className="text-sm text-muted-foreground">{l}</div><div className="mt-1 font-display text-2xl font-bold">{v}</div></div>

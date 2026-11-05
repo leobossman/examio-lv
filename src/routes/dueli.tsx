@@ -43,7 +43,7 @@ function Duels() {
   const answer = (i: number) => {
     if (picked !== null) return;
     setPicked(i);
-    if (i === qs[qi].c) setMe((m) => m + 100);
+    if (i === qs[qi]!.c) setMe((m) => m + 100);
     if (Math.random() > 0.4) setOpp((o) => o + 100);
     setTimeout(() => {
       setPicked(null);
@@ -72,11 +72,11 @@ function Duels() {
               </div>
               <motion.div key={qi} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-8">
                 <div className="text-sm text-muted-foreground">Jautājums {qi + 1}/{qs.length}</div>
-                <h2 className="mt-2 text-xl font-bold">{qs[qi].q}</h2>
+                <h2 className="mt-2 text-xl font-bold">{qs[qi]!.q}</h2>
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                  {qs[qi].a.map((a, i) => (
+                  {qs[qi]!.a.map((a, i) => (
                     <button key={a} onClick={() => answer(i)}
-                      className={`rounded-xl border-2 p-4 text-left font-semibold transition ${picked === null ? "hover:border-primary" : i === qs[qi].c ? "border-success bg-success/10" : picked === i ? "border-destructive bg-destructive/10" : "opacity-50"}`}>
+                      className={`rounded-xl border-2 p-4 text-left font-semibold transition ${picked === null ? "hover:border-primary" : i === qs[qi]!.c ? "border-success bg-success/10" : picked === i ? "border-destructive bg-destructive/10" : "opacity-50"}`}>
                       {a}
                     </button>
                   ))}
