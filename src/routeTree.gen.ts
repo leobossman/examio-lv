@@ -10,18 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AizmirsuParoliRouteImport } from './routes/aizmirsu-paroli'
 import { Route as CenasRouteImport } from './routes/cenas'
 import { Route as DueliRouteImport } from './routes/dueli'
 import { Route as MacibasRouteImport } from './routes/macibas'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PieslegtiesRouteImport } from './routes/pieslegties'
 import { Route as RegistretiesRouteImport } from './routes/registreties'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SimulatorsRouteImport } from './routes/simulators'
 import { Route as VecakiemRouteImport } from './routes/vecakiem'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AizmirsuParoliRoute = AizmirsuParoliRouteImport.update({
+  id: '/aizmirsu-paroli',
+  path: '/aizmirsu-paroli',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CenasRoute = CenasRouteImport.update({
@@ -54,6 +61,11 @@ const RegistretiesRoute = RegistretiesRouteImport.update({
   path: '/registreties',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulatorsRoute = SimulatorsRouteImport.update({
   id: '/simulators',
   path: '/simulators',
@@ -67,35 +79,41 @@ const VecakiemRoute = VecakiemRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aizmirsu-paroli': typeof AizmirsuParoliRoute
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aizmirsu-paroli': typeof AizmirsuParoliRoute
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aizmirsu-paroli': typeof AizmirsuParoliRoute
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
@@ -103,46 +121,54 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/aizmirsu-paroli'
     | '/cenas'
     | '/dueli'
     | '/macibas'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
+    | '/reset-password'
     | '/simulators'
     | '/vecakiem'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/aizmirsu-paroli'
     | '/cenas'
     | '/dueli'
     | '/macibas'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
+    | '/reset-password'
     | '/simulators'
     | '/vecakiem'
   id:
     | '__root__'
     | '/'
+    | '/aizmirsu-paroli'
     | '/cenas'
     | '/dueli'
     | '/macibas'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
+    | '/reset-password'
     | '/simulators'
     | '/vecakiem'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AizmirsuParoliRoute: typeof AizmirsuParoliRoute
   CenasRoute: typeof CenasRoute
   DueliRoute: typeof DueliRoute
   MacibasRoute: typeof MacibasRoute
   OnboardingRoute: typeof OnboardingRoute
   PieslegtiesRoute: typeof PieslegtiesRoute
   RegistretiesRoute: typeof RegistretiesRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SimulatorsRoute: typeof SimulatorsRoute
   VecakiemRoute: typeof VecakiemRoute
 }
@@ -154,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aizmirsu-paroli': {
+      id: '/aizmirsu-paroli'
+      path: '/aizmirsu-paroli'
+      fullPath: '/aizmirsu-paroli'
+      preLoaderRoute: typeof AizmirsuParoliRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cenas': {
@@ -198,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegistretiesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulators': {
       id: '/simulators'
       path: '/simulators'
@@ -217,12 +257,14 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AizmirsuParoliRoute: AizmirsuParoliRoute,
   CenasRoute: CenasRoute,
   DueliRoute: DueliRoute,
   MacibasRoute: MacibasRoute,
   OnboardingRoute: OnboardingRoute,
   PieslegtiesRoute: PieslegtiesRoute,
   RegistretiesRoute: RegistretiesRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SimulatorsRoute: SimulatorsRoute,
   VecakiemRoute: VecakiemRoute,
 }
