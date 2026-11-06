@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CenasRouteImport } from './routes/cenas'
 import { Route as DueliRouteImport } from './routes/dueli'
 import { Route as MacibasRouteImport } from './routes/macibas'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as PieslegtiesRouteImport } from './routes/pieslegties'
+import { Route as RegistretiesRouteImport } from './routes/registreties'
 import { Route as SimulatorsRouteImport } from './routes/simulators'
 import { Route as VecakiemRouteImport } from './routes/vecakiem'
 
@@ -36,6 +39,21 @@ const MacibasRoute = MacibasRouteImport.update({
   path: '/macibas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PieslegtiesRoute = PieslegtiesRouteImport.update({
+  id: '/pieslegties',
+  path: '/pieslegties',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistretiesRoute = RegistretiesRouteImport.update({
+  id: '/registreties',
+  path: '/registreties',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SimulatorsRoute = SimulatorsRouteImport.update({
   id: '/simulators',
   path: '/simulators',
@@ -52,6 +70,9 @@ export interface FileRoutesByFullPath {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pieslegties': typeof PieslegtiesRoute
+  '/registreties': typeof RegistretiesRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
@@ -60,6 +81,9 @@ export interface FileRoutesByTo {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pieslegties': typeof PieslegtiesRoute
+  '/registreties': typeof RegistretiesRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
@@ -69,21 +93,44 @@ export interface FileRoutesById {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/onboarding': typeof OnboardingRoute
+  '/pieslegties': typeof PieslegtiesRoute
+  '/registreties': typeof RegistretiesRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/cenas' | '/dueli' | '/macibas' | '/simulators' | '/vecakiem'
+    | '/'
+    | '/cenas'
+    | '/dueli'
+    | '/macibas'
+    | '/onboarding'
+    | '/pieslegties'
+    | '/registreties'
+    | '/simulators'
+    | '/vecakiem'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cenas' | '/dueli' | '/macibas' | '/simulators' | '/vecakiem'
+  to:
+    | '/'
+    | '/cenas'
+    | '/dueli'
+    | '/macibas'
+    | '/onboarding'
+    | '/pieslegties'
+    | '/registreties'
+    | '/simulators'
+    | '/vecakiem'
   id:
     | '__root__'
     | '/'
     | '/cenas'
     | '/dueli'
     | '/macibas'
+    | '/onboarding'
+    | '/pieslegties'
+    | '/registreties'
     | '/simulators'
     | '/vecakiem'
   fileRoutesById: FileRoutesById
@@ -93,6 +140,9 @@ export interface RootRouteChildren {
   CenasRoute: typeof CenasRoute
   DueliRoute: typeof DueliRoute
   MacibasRoute: typeof MacibasRoute
+  OnboardingRoute: typeof OnboardingRoute
+  PieslegtiesRoute: typeof PieslegtiesRoute
+  RegistretiesRoute: typeof RegistretiesRoute
   SimulatorsRoute: typeof SimulatorsRoute
   VecakiemRoute: typeof VecakiemRoute
 }
@@ -127,6 +177,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MacibasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pieslegties': {
+      id: '/pieslegties'
+      path: '/pieslegties'
+      fullPath: '/pieslegties'
+      preLoaderRoute: typeof PieslegtiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registreties': {
+      id: '/registreties'
+      path: '/registreties'
+      fullPath: '/registreties'
+      preLoaderRoute: typeof RegistretiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/simulators': {
       id: '/simulators'
       path: '/simulators'
@@ -149,6 +220,9 @@ const rootRouteChildren: RootRouteChildren = {
   CenasRoute: CenasRoute,
   DueliRoute: DueliRoute,
   MacibasRoute: MacibasRoute,
+  OnboardingRoute: OnboardingRoute,
+  PieslegtiesRoute: PieslegtiesRoute,
+  RegistretiesRoute: RegistretiesRoute,
   SimulatorsRoute: SimulatorsRoute,
   VecakiemRoute: VecakiemRoute,
 }

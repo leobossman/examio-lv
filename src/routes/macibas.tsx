@@ -111,6 +111,7 @@ function Cards() {
 
   return (
     <div className="mx-auto max-w-sm">
+      <VoiceAnswer />
       <div className="mb-4 flex justify-between text-sm text-muted-foreground">
         <span>{Math.min(i + 1, flashcards.length)} / {flashcards.length}</span><span className="font-semibold text-success">Zinu: {known}</span>
       </div>
