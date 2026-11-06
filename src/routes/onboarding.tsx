@@ -50,7 +50,7 @@ function Onboarding() {
   const [busy, setBusy] = useState(false);
 
   const toggle = (s: string) =>
-    setExams((x) => (x.some((e) => e.subject === s) ? x.filter((e) => e.subject !== s) : [...x, { subject: s, level: cat.levels[0] }]));
+    setExams((x) => (x.some((e) => e.subject === s) ? x.filter((e) => e.subject !== s) : [...x, { subject: s, level: cat.levels[0] ?? "" }]));
   const setLevel = (s: string, level: string) => setExams((x) => x.map((e) => (e.subject === s ? { ...e, level } : e)));
 
   const valid = [!!grade, exams.length > 0, !!year, !!baseline, !!goal, !!struggle][step];
