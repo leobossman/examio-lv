@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, AnimatePresence, type PanInfo } from "framer-motion";
-import { Bot, Send, Check, X, RotateCcw } from "lucide-react";
+import { Bot, Send, Check, X, RotateCcw, Mic } from "lucide-react";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { flashcards } from "@/lib/data";
@@ -111,6 +111,7 @@ function Cards() {
 
   return (
     <div className="mx-auto max-w-sm">
+      <VoiceAnswer />
       <div className="mb-4 flex justify-between text-sm text-muted-foreground">
         <span>{Math.min(i + 1, flashcards.length)} / {flashcards.length}</span><span className="font-semibold text-success">Zinu: {known}</span>
       </div>
@@ -165,5 +166,32 @@ function SwipeCard({ card, top, onSwipe }: { card: (typeof flashcards)[0]; top: 
       <div className="mt-4 font-display text-2xl font-bold">{flip ? card.back : card.front}</div>
       <span className="mt-6 text-xs text-muted-foreground">{flip ? "Atbilde" : "Pieskaries, lai apgrieztu"}</span>
     </motion.div>
+  );
+}
+
+function VoiceAnswer() {
+  const [text, setText] = useState("");
+  const [on, setOn] = useState(false);
+  const start = () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) { setText("Tava pārlūkprogramma neatbalsta runas atpazīšanu."); return; }
+    const r = new SR();
+    r.lang = "lv-LV";
+    r.interimResults = true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    r.onresult = (e: any) => setText(Array.from(e.results).map((x: any) => x[0].transcript).join(" "));
+    r.onend = () => setOn(false);
+    setOn(true);
+    r.start();
+  };
+  return (
+    <div className="card-surface mb-4 p-4">
+      <Button variant={on ? "cta" : "outline"} className="w-full" onClick={start} disabled={on}>
+        <Mic /> {on ? "Klausos..." : "Atbildēt mutiski"}
+      </Button>
+      {text && <p className="mt-3 text-sm">{text}</p>}
+    </div>
   );
 }

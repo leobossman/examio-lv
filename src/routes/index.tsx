@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { computeGap, goals, loadProfile } from "@/lib/profile";
 import { useState } from "react";
 import { GraduationCap, Swords, Timer, Layers, PenLine, Trophy } from "lucide-react";
 import { AppShell, PageTitle } from "@/components/AppShell";
@@ -7,6 +9,14 @@ import { ExamCountdown } from "@/components/ExamCountdown";
 import { leaderboard, levels, programs, projected, subjects12, subjects9 } from "@/lib/data";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) throw redirect({ to: "/pieslegties" });
+    const profile = await loadProfile(data.user.id);
+    if (!profile?.onboarded) throw redirect({ to: "/onboarding" });
+    return { profile };
+  },
   head: () => ({
     meta: [
       { title: "Examio — gatavojies valsts eksāmeniem gudri" },
@@ -22,12 +32,29 @@ function Dashboard() {
   const [grade, setGrade] = useState<"9" | "12">("12");
   const avg = Math.round(projected.reduce((s, p) => s + p.score, 0) / projected.length);
   const subjects = grade === "12" ? subjects12 : subjects9;
+  const { profile } = Route.useRouteContext();
+  const nav = useNavigate();
+  const g = computeGap(profile.baseline, profile.goal);
+  const goalLabel = goals.find((x) => x.v === profile.goal)?.l ?? "";
+  const signOut = async () => { await supabase.auth.signOut(); nav({ to: "/pieslegties", replace: true }); };
 
   return (
     <AppShell>
-      <PageTitle title="Sveiks, Lauri! 👋" sub="Līdz matemātikas CE atlikušas 47 dienas. Turpini tempu." />
+      <div className="flex items-start justify-between gap-4">
+        <PageTitle title={`Sveiks, ${profile.display_name || "skolēn"}! 👋`} sub={`${profile.grade} · ${profile.exams.map((e) => `${e.subject} (${e.level})`).join(", ")}`} />
+        <Button variant="outline" size="sm" onClick={signOut}>Iziet</Button>
+      </div>
 
       <ExamCountdown />
+      <section className={`card-surface mb-6 p-6 ${g.gap > 35 ? "border-accent" : "border-primary"}`}>
+        <div className="text-sm font-semibold text-primary">Tavs personīgais plāns</div>
+        <div className="mt-2 flex flex-wrap items-end gap-6">
+          <div><div className="font-display text-3xl font-bold">~{g.cur}% → {g.target}%</div><div className="text-sm text-muted-foreground">{goalLabel}</div></div>
+          <div><div className={`font-display text-3xl font-bold ${g.gap > 35 ? "text-accent" : "text-primary"}`}>{g.gap === 0 ? "Mērķis sasniegts" : `+${g.gap}%`}</div><div className="text-sm text-muted-foreground">plaisa līdz mērķim</div></div>
+          <div><div className="font-display text-3xl font-bold">{g.dailyMin} min/dienā</div><div className="text-sm text-muted-foreground">{g.intensity} intensitāte</div></div>
+        </div>
+        <p className="mt-3 text-sm">Fokuss: <b>{profile.struggle}</b>. {g.gap > 35 ? "Sāc ar pamatiem katru dienu — bez izlaidumiem." : g.gap > 0 ? "Pastāvīgs ritms aizvedīs tevi līdz mērķim." : "Uzturi formu ar simulatoru un dueļiem."}</p>
+      </section>
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="card-surface p-6 lg:col-span-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-primary">

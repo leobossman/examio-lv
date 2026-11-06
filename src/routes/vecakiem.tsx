@@ -19,7 +19,10 @@ function Parents() {
   const totalMin = weekly.reduce((a, d) => a + d.min, 0);
   return (
     <AppShell>
-      <PageTitle title="Vecāku panelis" sub="Laura progress šonedēļ" />
+      <div className="flex items-start justify-between gap-4">
+        <PageTitle title="Vecāku panelis" sub="Laura progress šonedēļ" />
+        <button onClick={() => window.print()} className="no-print rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-foreground">Lejupielādēt PDF atskaiti</button>
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         {[
           ["Mācību laiks", `${Math.floor(totalMin / 60)} h ${totalMin % 60} min`],
