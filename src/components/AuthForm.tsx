@@ -55,6 +55,9 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         )}
         <input className="w-full rounded-lg border bg-background px-3 py-2" type="email" placeholder="E-pasts" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input className="w-full rounded-lg border bg-background px-3 py-2" type="password" placeholder="Parole" value={password} onChange={(e) => setPassword(e.target.value)} />
+        {mode === "login" && (
+          <div className="text-right"><Link to="/aizmirsu-paroli" className="text-sm font-semibold text-primary">Aizmirsi paroli?</Link></div>
+        )}
         {err && <p className="text-sm text-destructive">{err}</p>}
         {info && <p className="text-sm text-success">{info}</p>}
         <Button type="submit" variant="cta" className="w-full" disabled={busy}>{busy ? "..." : mode === "login" ? "Pieslēgties" : "Izveidot kontu"}</Button>
