@@ -10,7 +10,7 @@ export function ExamCountdown({ exams }: { exams: Exam[] }) {
     const id = setInterval(() => setNow(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
-  const year = exams.find((e) => e.year)?.year ?? nextExamYears()[0];
+  const year = exams.find((e) => e.year)?.year ?? nextExamYears()[0]!;
   const next = exams
     .map((e) => ({ subject: e.subject, date: examDate(e.subject, e.year ?? year) }))
     .filter((e) => now === null || e.date.getTime() > now)
