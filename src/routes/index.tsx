@@ -6,7 +6,8 @@ import { GraduationCap, Swords, Timer, Layers, PenLine, Trophy } from "lucide-re
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { ExamCountdown } from "@/components/ExamCountdown";
-import { leaderboard, levels, programs, projected, subjects12, subjects9 } from "@/lib/data";
+import { leaderboard, programs, projected } from "@/lib/data";
+import { GRADES, catalogFor } from "@/lib/exam-catalog";
 
 export const Route = createFileRoute("/")({
   ssr: false,
@@ -29,10 +30,10 @@ export const Route = createFileRoute("/")({
 });
 
 function Dashboard() {
-  const [grade, setGrade] = useState<"9" | "12">("12");
-  const avg = Math.round(projected.reduce((s, p) => s + p.score, 0) / projected.length);
-  const subjects = grade === "12" ? subjects12 : subjects9;
   const { profile } = Route.useRouteContext();
+  const [grade, setGrade] = useState<string>(profile.grade ?? "12. klase");
+  const avg = Math.round(projected.reduce((s, p) => s + p.score, 0) / projected.length);
+  const cat = catalogFor(grade);
   const nav = useNavigate();
   const g = computeGap(profile.baseline, profile.goal);
   const goalLabel = goals.find((x) => x.v === profile.goal)?.l ?? "";
@@ -45,7 +46,7 @@ function Dashboard() {
         <Button variant="outline" size="sm" onClick={signOut}>Iziet</Button>
       </div>
 
-      <ExamCountdown />
+      <ExamCountdown exams={profile.exams} />
       <section className={`card-surface mb-6 p-6 ${g.gap > 35 ? "border-accent" : "border-primary"}`}>
         <div className="text-sm font-semibold text-primary">Tavs personīgais plāns</div>
         <div className="mt-2 flex flex-wrap items-end gap-6">
@@ -122,22 +123,22 @@ function Dashboard() {
 
       <section className="mt-10">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold">Eksāmeni</h2>
-          <div className="flex rounded-xl bg-muted p-1 text-sm">
-            {(["9", "12"] as const).map((g) => (
+          <h2 className="text-xl font-bold">Eksāmeni · {cat.label}</h2>
+          <div className="flex flex-wrap rounded-xl bg-muted p-1 text-sm">
+            {GRADES.map((g) => (
               <button key={g} onClick={() => setGrade(g)}
                 className={`rounded-lg px-3 py-1.5 font-medium ${grade === g ? "bg-card shadow-soft" : "text-muted-foreground"}`}>
-                {g === "9" ? "9. klases eksāmeni" : "12. klases CE"}
+                {g}
               </button>
             ))}
           </div>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {subjects.map((s) => (
+          {cat.subjects.map((s) => (
             <div key={s} className="card-surface p-4">
               <div className="font-semibold">{s}</div>
               <div className="mt-3 flex gap-2">
-                {(grade === "12" ? levels : ["Pamatskola"]).map((l) => (
+                {cat.levels.map((l) => (
                   <Link key={l} to="/macibas" className="rounded-full bg-primary-soft px-3 py-1 text-xs font-medium hover:bg-primary hover:text-primary-foreground">{l}</Link>
                 ))}
               </div>
