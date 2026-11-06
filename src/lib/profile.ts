@@ -1,8 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export const grades = ["9. klase", "12. klase", "Absolvents"] as const;
-export const examSubjects = ["Matemātika", "Latviešu valoda", "Angļu valoda", "Fizika", "Ķīmija", "Bioloģija", "Vēsture", "Ģeogrāfija", "Programmēšana"];
-export const examLevels = ["Pamatlīmenis", "Optimālais", "Augstākais"] as const;
+import { GRADES } from "@/lib/exam-catalog";
+export const grades = GRADES;
 export const baselines = [
   { v: "lt40", l: "Zem 40% (Cīnos par izdzīvošanu)", mid: 30 },
   { v: "40-60", l: "40%-60% (Viduvēji)", mid: 50 },
@@ -17,7 +16,7 @@ export const goals = [
 ];
 export const struggles = ["Teorijas un formulu iegaumēšana", "2. daļas atvērtie uzdevumi", "Laika plānošana un stress", "Motivācijas trūkums"];
 
-export type Exam = { subject: string; level: string };
+export type Exam = { subject: string; level: string; year?: number };
 export type Profile = {
   id: string; display_name: string | null; grade: string | null; exams: Exam[];
   baseline: string | null; goal: string | null; struggle: string | null; onboarded: boolean;
