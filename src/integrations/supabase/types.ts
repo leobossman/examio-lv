@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      attempts: {
+        Row: {
+          correct: boolean
+          created_at: string
+          id: string
+          points_earned: number
+          task_id: string
+          time_spent_sec: number
+          user_id: string
+        }
+        Insert: {
+          correct?: boolean
+          created_at?: string
+          id?: string
+          points_earned?: number
+          task_id: string
+          time_spent_sec?: number
+          user_id: string
+        }
+        Update: {
+          correct?: boolean
+          created_at?: string
+          id?: string
+          points_earned?: number
+          task_id?: string
+          time_spent_sec?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempts_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           baseline: string | null
@@ -24,8 +62,10 @@ export type Database = {
           grade: string | null
           id: string
           onboarded: boolean
+          streak: number
           struggle: string | null
           updated_at: string
+          xp: number
         }
         Insert: {
           baseline?: string | null
@@ -36,8 +76,10 @@ export type Database = {
           grade?: string | null
           id: string
           onboarded?: boolean
+          streak?: number
           struggle?: string | null
           updated_at?: string
+          xp?: number
         }
         Update: {
           baseline?: string | null
@@ -48,7 +90,60 @@ export type Database = {
           grade?: string | null
           id?: string
           onboarded?: boolean
+          streak?: number
           struggle?: string | null
+          updated_at?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      tasks: {
+        Row: {
+          answer: string
+          created_at: string
+          difficulty: number
+          explanation: string
+          grades: string[]
+          id: string
+          options: Json
+          points: number
+          question: string
+          steps: Json
+          subject: string
+          topic: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          answer?: string
+          created_at?: string
+          difficulty?: number
+          explanation?: string
+          grades: string[]
+          id: string
+          options?: Json
+          points?: number
+          question: string
+          steps?: Json
+          subject: string
+          topic: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          difficulty?: number
+          explanation?: string
+          grades?: string[]
+          id?: string
+          options?: Json
+          points?: number
+          question?: string
+          steps?: Json
+          subject?: string
+          topic?: string
+          type?: string
           updated_at?: string
         }
         Relationships: []
@@ -58,7 +153,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      learning_leaderboard: {
+        Args: never
+        Returns: {
+          is_self: boolean
+          name: string
+          streak: number
+          xp: number
+        }[]
+      }
+      record_attempt: {
+        Args: {
+          p_answer: string
+          p_self_points?: number
+          p_task_id: string
+          p_time_spent_sec: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
