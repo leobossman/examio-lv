@@ -16,6 +16,8 @@ import { flashcards } from "@/lib/data";
 export const Route = createFileRoute("/macibas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mācības — eksāmenu uzdevumi | Examio" },
       { name: "description", content: "Risina eksāmenu uzdevumus un seko savam mācību progresam." },
       { property: "og:title", content: "Mācības | Examio" },

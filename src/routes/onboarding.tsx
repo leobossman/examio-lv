@@ -16,6 +16,8 @@ export const Route = createFileRoute("/onboarding")({
   },
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Sākuma uzdevums | Examio" },
       { name: "description", content: "Pastāsti par sevi, lai Examio izveidotu tavu CE plānu." },
       { property: "og:title", content: "Sākuma uzdevums | Examio" },

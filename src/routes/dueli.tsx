@@ -4,11 +4,15 @@ import { motion } from "framer-motion";
 import { Swords, Zap } from "lucide-react";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { leaderboard } from "@/lib/data";
+import { learningQuery } from "@/lib/learning-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { LearningBoundary } from "@/components/LearningBoundary";
 
 export const Route = createFileRoute("/dueli")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "1v1 Dueļi — sacenties ar klasesbiedriem | Examio" },
       { name: "description", content: "Ātrās 5 minūšu viktorīnas pret klasesbiedriem. Nopelni XP un kāp līderu tabulā." },
       { property: "og:title", content: "1v1 Dueļi | Examio" },
@@ -93,14 +97,7 @@ function Duels() {
             </motion.div>
           )}
         </section>
-        <aside className="card-surface h-fit p-5">
-          <h3 className="font-bold">Līderu tabula</h3>
-          <ol className="mt-4 space-y-2 text-sm">
-            {leaderboard.map((u, i) => (
-              <li key={u.name} className="flex justify-between"><span>{i + 1}. {u.name}</span><b>{u.xp} XP</b></li>
-            ))}
-          </ol>
-        </aside>
+        <LearningBoundary><RealLeaders /></LearningBoundary>
       </div>
     </AppShell>
   );
@@ -111,4 +108,11 @@ function Avatar({ n }: { n: string }) {
 }
 function Score({ n, s }: { n: string; s: number }) {
   return <div><div className="text-xs text-muted-foreground">{n}</div><div className="font-display text-2xl font-bold">{s}</div></div>;
+}
+
+function RealLeaders() {
+  const { data } = useSuspenseQuery(learningQuery);
+  const leaders = data?.leaders ?? [];
+  if (leaders.length < 5) return null;
+  return <aside className="card-surface h-fit p-5"><h3 className="font-bold">Līderu tabula</h3><ol className="mt-4 space-y-2 text-sm">{leaders.map((u, i) => <li key={i} className="flex justify-between"><span>{i + 1}. {u.name}</span><b>{u.xp} XP</b></li>)}</ol></aside>;
 }

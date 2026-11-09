@@ -4,6 +4,8 @@ import { AuthForm } from "@/components/AuthForm";
 export const Route = createFileRoute("/registreties")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Reģistrēties | Examio" },
       { name: "description", content: "Izveido Examio kontu un sāc gatavoties CE." },
       { property: "og:title", content: "Reģistrēties | Examio" },

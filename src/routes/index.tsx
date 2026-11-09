@@ -23,6 +23,8 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Examio — gatavojies valsts eksāmeniem gudri" },
       { name: "description", content: "Examio palīdz 9.–12. klases skolēniem sagatavoties CE ar AI pasniedzēju, dueļiem un simulatoru." },
       { property: "og:title", content: "Examio — gatavojies valsts eksāmeniem gudri" },

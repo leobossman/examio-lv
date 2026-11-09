@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/cenas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Plāni un cenas — Bāze, Fokuss, Izcilnieks | Examio" },
       { name: "description", content: "Izvēlies Examio plānu: Bāze bez maksas, Fokuss 10 €/mēn vai Izcilnieks 80 €/mēn." },
       { property: "og:title", content: "Plāni un cenas | Examio" },
