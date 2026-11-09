@@ -1,3 +1,4 @@
-- [ ] Pārnest uzdevumus un ieviest drošu mēģinājumu/XP saglabāšanu.
-- [ ] Savienot Mācības, sākumlapu un Vecākiem ar īstiem datiem.
-- [ ] Pārbaudīt aprēķinus, datu piekļuvi un atbilžu saglabāšanu.
+- [x] Pārnest uzdevumus un ieviest drošu mēģinājumu/XP saglabāšanu.
+- [x] Savienot Mācības, sākumlapu un Vecākiem ar īstiem datiem.
+- [x] Pārbaudīt aprēķinus, datu piekļuves konfigurāciju un nepierakstītu apmeklētāju lapas.
+- [ ] Pārbaudīt saglabāšanu pierakstīta lietotāja lapās — ārējā Supabase savienojumā automatizēta sesija nav pieejama.
