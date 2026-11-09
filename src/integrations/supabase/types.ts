@@ -168,6 +168,16 @@ export type Database = {
           p_self_points?: number
           p_task_id: string
           p_time_spent_sec: number
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      record_attempt_internal: {
+        Args: {
+          p_answer: string
+          p_self_points?: number
+          p_task_id: string
+          p_time_spent_sec: number
         }
         Returns: Json
       }
