@@ -1,0 +1,3 @@
+- [ ] Pārnest uzdevumus un ieviest drošu mēģinājumu/XP saglabāšanu.
+- [ ] Savienot Mācības, sākumlapu un Vecākiem ar īstiem datiem.
+- [ ] Pārbaudīt aprēķinus, datu piekļuvi un atbilžu saglabāšanu.
