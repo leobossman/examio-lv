@@ -29,3 +29,5 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 - Grades, exam subjects, levels and exam years come only from src/lib/exam-catalog.ts — single place to edit the exam list.
+- Learning tasks live in Supabase; authenticated server functions read owner-scoped attempts with pagination, while narrow service-only RPCs record atomic graded attempts and aggregate privacy-limited leaderboards to prevent client-written XP.
+- Existing public learning surfaces load private data only inside client-only suspense queries; signed-out queries return no private data, avoiding SSR bearer-token failures while retaining existing URLs and auth flows.
