@@ -6,7 +6,10 @@ import { GraduationCap, Swords, Timer, Layers, PenLine, Trophy } from "lucide-re
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { ExamCountdown } from "@/components/ExamCountdown";
-import { leaderboard, programs, projected } from "@/lib/data";
+import { summarize } from "@/lib/learning";
+import { learningQuery } from "@/lib/learning-query";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { LearningBoundary } from "@/components/LearningBoundary";
 import { GRADES, catalogFor } from "@/lib/exam-catalog";
 
 export const Route = createFileRoute("/")({
@@ -26,18 +29,23 @@ export const Route = createFileRoute("/")({
       { property: "og:description", content: "AI pasniedzējs, dueļi, kartītes un CE simulators latviešu skolēniem." },
     ],
   }),
-  component: Dashboard,
+  component: () => <LearningBoundary><Dashboard /></LearningBoundary>,
 });
 
 function Dashboard() {
   const { profile } = Route.useRouteContext();
   const [grade, setGrade] = useState<string>(profile.grade ?? "12. klase");
-  const avg = Math.round(projected.reduce((s, p) => s + p.score, 0) / projected.length);
+  const { data } = useSuspenseQuery(learningQuery);
+  const client = useQueryClient();
+  const stats = summarize(data?.attempts ?? [], data?.tasks ?? []);
+  const avg = stats.average;
+  const projected = stats.projected;
+  const leaderboard = data?.leaders ?? [];
   const cat = catalogFor(grade);
   const nav = useNavigate();
   const g = computeGap(profile.baseline, profile.goal);
   const goalLabel = goals.find((x) => x.v === profile.goal)?.l ?? "";
-  const signOut = async () => { await supabase.auth.signOut(); nav({ to: "/pieslegties", replace: true }); };
+  const signOut = async () => { await client.cancelQueries(); client.clear(); await supabase.auth.signOut(); nav({ to: "/pieslegties", replace: true }); };
 
   return (
     <AppShell>
@@ -47,6 +55,7 @@ function Dashboard() {
       </div>
 
       <ExamCountdown exams={profile.exams} />
+      <div className="mb-6 flex flex-wrap gap-6 font-semibold"><span>{data?.profile.xp ?? 0} XP</span><span>Dienu sērija: {data?.profile.streak ?? 0}</span></div>
       <section className={`card-surface mb-6 p-6 ${g.gap > 35 ? "border-accent" : "border-primary"}`}>
         <div className="text-sm font-semibold text-primary">Tavs personīgais plāns</div>
         <div className="mt-2 flex flex-wrap items-end gap-6">
@@ -59,51 +68,37 @@ function Dashboard() {
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="card-surface p-6 lg:col-span-2">
           <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-            <GraduationCap className="h-4 w-4" /> Budžeta vietas kalkulators
+            <GraduationCap className="h-4 w-4" /> Uzdevumu rezultāti
           </div>
-          <div className="mt-4 flex flex-wrap items-end gap-6">
+          {!stats.count ? <p className="mt-4 text-muted-foreground">Atrisini pirmos uzdevumus</p> : <div className="mt-4 flex flex-wrap items-end gap-6">
             <div>
               <div className="font-display text-5xl font-bold">{avg}%</div>
-              <div className="text-sm text-muted-foreground">prognozētais vidējais CE</div>
+              <div className="text-sm text-muted-foreground">vidējais uzdevumu rezultāts</div>
             </div>
             <div className="grid flex-1 gap-3">
               {projected.map((p) => (
                 <div key={p.subject} className="text-sm">
-                  <div className="mb-1 flex justify-between"><span>{p.subject} <span className="text-muted-foreground">· {p.level}</span></span><b>{p.score}%</b></div>
+                  <div className="mb-1 flex justify-between"><span>{p.subject} <span className="text-muted-foreground">· {profile.exams.find(e => e.subject === p.subject)?.level ?? ""}</span></span><b>{p.score}%</b></div>
                   <div className="h-2 rounded-full bg-muted"><div className="h-2 rounded-full bg-brand" style={{ width: `${p.score}%` }} /></div>
                 </div>
               ))}
             </div>
-          </div>
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            {programs.map((pr) => {
-              const ok = avg >= pr.need;
-              return (
-                <div key={pr.name} className={`rounded-xl border p-4 ${ok ? "bg-primary-soft" : "bg-accent-soft"}`}>
-                  <div className="text-sm font-semibold">{pr.name}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">Nepieciešams ~{pr.need}%</div>
-                  <div className={`mt-2 text-sm font-bold ${ok ? "text-success" : "text-accent"}`}>
-                    {ok ? "✓ Budžeta vieta" : `Trūkst ${pr.need - avg}%`}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          </div>}
         </section>
 
-        <section className="card-surface p-6">
+        {leaderboard.length >= 5 && <section className="card-surface p-6">
           <div className="flex items-center gap-2 text-sm font-semibold text-accent"><Trophy className="h-4 w-4" /> Līderu tabula</div>
           <ol className="mt-4 space-y-2">
             {leaderboard.map((u, i) => (
-              <li key={u.name} className={`flex items-center gap-3 rounded-lg p-2 ${u.name === "Tu" ? "bg-accent-soft" : ""}`}>
+              <li key={u.user_id} className={`flex items-center gap-3 rounded-lg p-2 ${u.user_id === profile.id ? "bg-accent-soft" : ""}`}>
                 <span className="w-5 font-display font-bold text-muted-foreground">{i + 1}</span>
-                <span className="flex-1 font-medium">{u.name}</span>
+                <span className="flex-1 font-medium">{u.user_id === profile.id ? "Tu" : u.display_name || "Skolēns"}</span>
                 <span className="text-sm font-bold">{u.xp.toLocaleString("lv")} XP</span>
               </li>
             ))}
           </ol>
           <Button asChild variant="cta" className="mt-4 w-full"><Link to="/dueli"><Swords /> Izaicināt uz dueli</Link></Button>
-        </section>
+        </section>}
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
