@@ -4,9 +4,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Button } from './ui/button';
 
 class LearningError extends Component<{ children: ReactNode; retry: () => void }, { failed: boolean }> {
-  state = { failed: false };
+  override state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  render() { return this.state.failed ? <div role="alert" className="p-6"><p>Neizdevās ielādēt mācību datus.</p><Button onClick={() => { this.props.retry(); this.setState({ failed: false }); }}>Mēģināt vēlreiz</Button></div> : this.props.children; }
+  override render() { return this.state.failed ? <div role="alert" className="p-6"><p>Neizdevās ielādēt mācību datus.</p><Button onClick={() => { this.props.retry(); this.setState({ failed: false }); }}>Mēģināt vēlreiz</Button></div> : this.props.children; }
 }
 export function LearningBoundary({ children }: { children: ReactNode }) {
   const client = useQueryClient(); const router = useRouter();

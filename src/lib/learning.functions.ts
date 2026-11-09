@@ -28,7 +28,7 @@ export const saveAttempt = createServerFn({ method: 'POST' }).middleware([requir
   .inputValidator(z.object({ taskId: z.string().min(1), answer: z.string().trim().min(1).max(20000), seconds: z.number().int().min(0).max(10800), selfPoints: z.number().int().min(0).optional() }))
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const result = await supabaseAdmin.rpc('record_attempt', { p_user_id: context.userId, p_task_id: data.taskId, p_answer: data.answer, p_time_spent_sec: data.seconds, p_self_points: data.selfPoints });
+    const result = await supabaseAdmin.rpc('record_attempt', { p_user_id: context.userId, p_task_id: data.taskId, p_answer: data.answer, p_time_spent_sec: data.seconds, ...(data.selfPoints === undefined ? {} : { p_self_points: data.selfPoints }) });
     if (result.error) throw new Error('Neizdevās saglabāt mēģinājumu. Iespējams, uzdevums jau atrisināts.');
     return result.data as unknown as AttemptResult;
   });
