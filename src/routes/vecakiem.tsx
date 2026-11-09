@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/vecakiem")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Vecāku panelis — sekojiet progresam | Examio" },
       { name: "description", content: "Vecāki redz bērna progresu, mācību laiku un vājās vietas eksāmenu sagatavošanā." },
       { property: "og:title", content: "Vecāku panelis | Examio" },

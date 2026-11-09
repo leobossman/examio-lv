@@ -1,0 +1,3 @@
+CREATE FUNCTION public.learning_leaderboard_for_user(p_user_id uuid) RETURNS TABLE(name text,xp int,streak int,is_self boolean) LANGUAGE plpgsql SECURITY INVOKER SET search_path=public AS $$ BEGIN PERFORM set_config('request.jwt.claim.sub',p_user_id::text,true); PERFORM set_config('request.jwt.claims',jsonb_build_object('sub',p_user_id)::text,true); RETURN QUERY SELECT * FROM public.learning_leaderboard(); END $$;
+REVOKE ALL ON FUNCTION public.learning_leaderboard_for_user(uuid) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.learning_leaderboard_for_user(uuid) TO service_role;

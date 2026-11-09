@@ -162,6 +162,15 @@ export type Database = {
           xp: number
         }[]
       }
+      learning_leaderboard_for_user: {
+        Args: { p_user_id: string }
+        Returns: {
+          is_self: boolean
+          name: string
+          streak: number
+          xp: number
+        }[]
+      }
       record_attempt: {
         Args: {
           p_answer: string

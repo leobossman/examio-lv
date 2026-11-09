@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { LayoutDashboard, BookOpen, Swords, Timer, Users, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { learningQuery } from "@/lib/learning-query";
 import { FocusTimer, ThemeToggle } from "./HeaderTools";
 
 const nav = [
@@ -13,6 +15,7 @@ const nav = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { data } = useQuery({ ...learningQuery, enabled: false });
   return (
     <div className="min-h-screen pb-20 md:pb-0">
       <header className="sticky top-0 z-30 border-b bg-card/90 backdrop-blur">
@@ -33,8 +36,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-2 md:gap-3">
             <FocusTimer />
             <ThemeToggle />
-            <span className="hidden sm:inline rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent">🔥 14 dienas</span>
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-muted text-sm font-bold">LB</span>
+            <span className="hidden sm:inline rounded-full bg-accent-soft px-3 py-1 text-sm font-bold text-accent">🔥 {data?.profile.streak ?? 0} dienas</span>
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-muted text-sm font-bold">{data?.profile.display_name?.slice(0, 2).toUpperCase() || "—"}</span>
           </div>
         </div>
       </header>

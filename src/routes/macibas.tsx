@@ -16,6 +16,8 @@ import { flashcards } from "@/lib/data";
 export const Route = createFileRoute("/macibas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Mācības — eksāmenu uzdevumi | Examio" },
       { name: "description", content: "Risina eksāmenu uzdevumus un seko savam mācību progresam." },
       { property: "og:title", content: "Mācības | Examio" },
@@ -53,7 +55,7 @@ function Study() {
   const profile = learning?.profile;
   const exams = Array.isArray(profile?.exams) ? profile.exams : [];
   const firstExam = exams[0];
-  const initialSubject = firstExam && typeof firstExam === "object" && !Array.isArray(firstExam) && typeof firstExam.subject === "string" ? firstExam.subject : "Matemātika";
+  const initialSubject = firstExam && typeof firstExam === "object" && !Array.isArray(firstExam) && typeof firstExam['subject'] === "string" ? firstExam['subject'] : "Matemātika";
   const [grade, setGrade] = useState<string>(profile?.grade ?? "12. klase");
   const [subject, setSubject] = useState<string>(initialSubject);
   const [tab, setTab] = useState<"uzdevumi" | "eseja" | "kartites">("uzdevumi");
@@ -150,7 +152,7 @@ function TaskCard({ t, n }: { t: LearningTask; n: number }) {
       {checked && (
         <div className="mt-3 rounded-xl bg-muted p-3 text-sm">
           <p>{t.explanation}</p>
-          {t.steps && <ol className="mt-2 list-decimal space-y-1 pl-5">{strings(t.steps).map((s) => <li key={s}>{s}</li>)}</ol>}
+          {strings(t.steps).length > 0 && <ol className="mt-2 list-decimal space-y-1 pl-5">{strings(t.steps).map((s) => <li key={s}>{s}</li>)}</ol>}
           {t.type === "open" && t.answer && <p className="mt-2 font-semibold">Atbilde: {t.answer}</p>}
           {t.type === "open" && !result && <div className="mt-3 flex flex-wrap items-center gap-3">
             <label>Pašnovērtējums: <select aria-label="Pašnovērtējums" value={selfPoints} onChange={e => setSelfPoints(Number(e.target.value))} className="rounded-lg border bg-background p-2">{Array.from({ length: t.points + 1 }, (_, i) => <option key={i} value={i}>{i}/{t.points} p.</option>)}</select></label>

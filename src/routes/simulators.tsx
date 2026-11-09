@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/simulators")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "CE simulators — īsta eksāmena režīms | Examio" },
       { name: "description", content: "3 stundu CE simulācija bez traucēkļiem ar laika plānošanas analīzi." },
       { property: "og:title", content: "CE simulators | Examio" },

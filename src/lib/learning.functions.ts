@@ -19,7 +19,7 @@ export const getLearning = createServerFn({ method: 'POST' }).middleware([requir
   const { data: profile, error } = await context.supabase.from('profiles').select('*').eq('id', context.userId).single();
   if (error) throw new Error('Neizdevās ielādēt profilu.');
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-  const leaders = await supabaseAdmin.rpc('learning_leaderboard');
+  const leaders = await supabaseAdmin.rpc('learning_leaderboard_for_user', { p_user_id: context.userId });
   if (leaders.error) throw new Error('Neizdevās ielādēt līderu tabulu.');
   return { tasks, attempts, profile, leaders: leaders.data ?? [] };
 });
