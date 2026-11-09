@@ -90,9 +90,9 @@ function Dashboard() {
           <div className="flex items-center gap-2 text-sm font-semibold text-accent"><Trophy className="h-4 w-4" /> Līderu tabula</div>
           <ol className="mt-4 space-y-2">
             {leaderboard.map((u, i) => (
-              <li key={u.user_id} className={`flex items-center gap-3 rounded-lg p-2 ${u.user_id === profile.id ? "bg-accent-soft" : ""}`}>
+              <li key={i} className={`flex items-center gap-3 rounded-lg p-2 ${u.is_self ? "bg-accent-soft" : ""}`}>
                 <span className="w-5 font-display font-bold text-muted-foreground">{i + 1}</span>
-                <span className="flex-1 font-medium">{u.user_id === profile.id ? "Tu" : u.display_name || "Skolēns"}</span>
+                <span className="flex-1 font-medium">{u.is_self ? "Tu" : u.name}</span>
                 <span className="text-sm font-bold">{u.xp.toLocaleString("lv")} XP</span>
               </li>
             ))}
