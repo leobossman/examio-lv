@@ -12,6 +12,7 @@ import { Bot, Send, Check, X, RotateCcw, Mic } from "lucide-react";
 import { AppShell, PageTitle } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { flashcards } from "@/lib/data";
+import { FocusTimer } from "@/components/HeaderTools";
 
 export const Route = createFileRoute("/macibas")({
   head: () => ({
@@ -66,7 +67,7 @@ function Study() {
   if (!learning) return <AppShell><SignInToStudy /></AppShell>;
   return (
     <AppShell>
-      <PageTitle title="Mācības" sub={`${cat.label} · uzdevumi pēc eksāmena formāta`} />
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-2xl font-bold md:text-3xl">Mācības</h1><p className="mt-2 text-muted-foreground">{cat.label} · uzdevumi pēc eksāmena formāta</p></div><FocusTimer /></div>
       <div className="mb-4 flex flex-wrap gap-2">
         <select value={grade} onChange={(e) => setGrade(e.target.value)} className="rounded-lg border bg-card px-3 py-2 text-sm">
           {GRADES.map((g) => <option key={g}>{g}</option>)}
