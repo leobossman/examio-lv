@@ -20,6 +20,7 @@ import { Route as RegistretiesRouteImport } from './routes/registreties'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SimulatorsRouteImport } from './routes/simulators'
 import { Route as VecakiemRouteImport } from './routes/vecakiem'
+import { Route as AdminUzdevumiRouteImport } from './routes/admin.uzdevumi'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,11 @@ const VecakiemRoute = VecakiemRouteImport.update({
   path: '/vecakiem',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUzdevumiRoute = AdminUzdevumiRouteImport.update({
+  id: '/admin/uzdevumi',
+  path: '/admin/uzdevumi',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
+  '/admin/uzdevumi': typeof AdminUzdevumiRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
+  '/admin/uzdevumi': typeof AdminUzdevumiRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/simulators': typeof SimulatorsRoute
   '/vecakiem': typeof VecakiemRoute
+  '/admin/uzdevumi': typeof AdminUzdevumiRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/simulators'
     | '/vecakiem'
+    | '/admin/uzdevumi'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/simulators'
     | '/vecakiem'
+    | '/admin/uzdevumi'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/simulators'
     | '/vecakiem'
+    | '/admin/uzdevumi'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   SimulatorsRoute: typeof SimulatorsRoute
   VecakiemRoute: typeof VecakiemRoute
+  AdminUzdevumiRoute: typeof AdminUzdevumiRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VecakiemRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/uzdevumi': {
+      id: '/admin/uzdevumi'
+      path: '/admin/uzdevumi'
+      fullPath: '/admin/uzdevumi'
+      preLoaderRoute: typeof AdminUzdevumiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   SimulatorsRoute: SimulatorsRoute,
   VecakiemRoute: VecakiemRoute,
+  AdminUzdevumiRoute: AdminUzdevumiRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
