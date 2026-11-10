@@ -1,15 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { GRADES, catalogFor } from "@/lib/exam-catalog";
-import { remainingTasks, strings, type LearningTask, type AttemptResult } from "@/lib/learning";
+import { saveAttempt, explainTask } from "@/lib/learning.functions";
+import { strings, type LearningTask, type AttemptResult } from "@/lib/learning";
 import { learningQuery } from "@/lib/learning-query";
-import { TaskCard } from "@/components/TaskCard";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { LearningBoundary, SignInToStudy } from "@/components/LearningBoundary";
 import { motion, useMotionValue, useTransform, AnimatePresence, type PanInfo } from "framer-motion";
-import { Bot, Send, Check, X, RotateCcw, Mic } from "lucide-react";
-import { AppShell, PageTitle } from "@/components/AppShell";
+import { Bot, Send, Check, X, RotateCcw, Mic, Sparkles, ChevronLeft, BookOpen, Calculator, Languages, Atom, FlaskConical, Leaf, Landmark, Users, Globe, Palette, PenTool, Code, type LucideIcon } from "lucide-react";
+import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { flashcards } from "@/lib/data";
 import { FocusTimer } from "@/components/HeaderTools";
@@ -51,48 +51,214 @@ function gradeEssay(text: string): { scores: Score; note: string } {
 
 const ESSAY_SUBJECTS = ["Latviešu valoda", "Angļu valoda", "Vēsture", "Sociālās zinības"];
 
+const ICONS: Record<string, LucideIcon> = {
+  "Matemātika": Calculator, "Latviešu valoda": BookOpen, "Angļu valoda": Languages, "Fizika": Atom, "Ķīmija": FlaskConical,
+  "Bioloģija": Leaf, "Vēsture": Landmark, "Sociālās zinības": Users, "Ģeogrāfija": Globe, "Kultūra un māksla": Palette,
+  "Dizains un tehnoloģijas": PenTool, "Programmēšana": Code,
+};
+
+function Ring({ pct }: { pct: number }) {
+  const r = 18, c = 2 * Math.PI * r;
+  return (
+    <svg viewBox="0 0 44 44" className="h-12 w-12 -rotate-90" aria-label={`${pct}% apgūts`}>
+      <circle cx="22" cy="22" r={r} fill="none" stroke="var(--color-muted)" strokeWidth="5" />
+      <circle cx="22" cy="22" r={r} fill="none" stroke="var(--color-primary)" strokeWidth="5" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - pct / 100)} />
+      <text x="22" y="26" textAnchor="middle" className="rotate-90 fill-foreground text-[11px] font-bold" style={{ transformOrigin: "22px 22px" }}>{pct}%</text>
+    </svg>
+  );
+}
+
 function Study() {
   const { data: learning } = useSuspenseQuery(learningQuery);
-  const profile = learning?.profile;
-  const exams = Array.isArray(profile?.exams) ? profile.exams : [];
-  const firstExam = exams[0];
-  const initialSubject = firstExam && typeof firstExam === "object" && !Array.isArray(firstExam) && typeof firstExam['subject'] === "string" ? firstExam['subject'] : "Matemātika";
-  const [grade, setGrade] = useState<string>(profile?.grade ?? "12. klase");
-  const [subject, setSubject] = useState<string>(initialSubject);
-  const [tab, setTab] = useState<"uzdevumi" | "eseja" | "kartites">("uzdevumi");
-  const cat = catalogFor(grade);
-  const subj = cat.subjects.includes(subject) ? subject : (cat.subjects[0] ?? "Matemātika");
-  const tabs: [typeof tab, string][] = [["uzdevumi", "Uzdevumi"], ...(ESSAY_SUBJECTS.includes(subj) ? [["eseja", "Eseju vērtētājs"] as [typeof tab, string]] : []), ["kartites", "Kartītes"]];
-  const active = tab === "eseja" && !ESSAY_SUBJECTS.includes(subj) ? "uzdevumi" : tab;
+  const [grade, setGrade] = useState<string>(learning?.profile?.grade ?? "12. klase");
+  const [subject, setSubject] = useState<string | null>(null);
+  const [session, setSession] = useState<{ topic: string; tasks: LearningTask[] } | null>(null);
   if (!learning) return <AppShell><SignInToStudy /></AppShell>;
+  const cat = catalogFor(grade);
+  const tasks = learning.tasks.filter((t) => t.grades.includes(grade));
+  const solved = new Set(learning.attempts.filter((a) => a.correct).map((a) => a.task_id));
+  const pct = (list: LearningTask[]) => list.length ? Math.round(list.filter((t) => solved.has(t.id)).length / list.length * 100) : 0;
+  const start = (topic: string) => {
+    const pool = tasks.filter((t) => t.subject === subject && t.topic === topic);
+    const open = pool.filter((t) => !solved.has(t.id));
+    setSession({ topic, tasks: (open.length ? open : pool).slice(0, 10) });
+  };
+  if (session && subject) return <Session subject={subject} topic={session.topic} tasks={session.tasks}
+    onClose={() => setSession(null)} onAgain={() => start(session.topic)} />;
+
   return (
     <AppShell>
-      <div className="mb-8 flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-2xl font-bold md:text-3xl">Mācības</h1><p className="mt-2 text-muted-foreground">{cat.label} · uzdevumi pēc eksāmena formāta</p></div><FocusTimer /></div>
-      <div className="mb-4 flex flex-wrap gap-2">
-        <select value={grade} onChange={(e) => setGrade(e.target.value)} className="rounded-lg border bg-card px-3 py-2 text-sm">
-          {GRADES.map((g) => <option key={g}>{g}</option>)}
-        </select>
-        {cat.subjects.map((s) => (
-          <button key={s} onClick={() => setSubject(s)}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium ${s === subj ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>{s}</button>
-        ))}
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          {subject ? <button onClick={() => setSubject(null)} className="mb-2 inline-flex items-center gap-1 text-sm font-semibold text-primary-strong"><ChevronLeft className="h-4 w-4" /> Visi priekšmeti</button> : null}
+          <h1 className="text-2xl font-bold md:text-3xl">{subject ?? "Mācības"}</h1>
+          <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
+            <select aria-label="Klase" value={grade} onChange={(e) => { setGrade(e.target.value); setSubject(null); }}
+              className="rounded-full border bg-card px-3 py-1.5 text-xs font-semibold text-foreground">
+              {GRADES.map((g) => <option key={g}>{g}</option>)}
+            </select>
+            <span>{cat.label}</span>
+          </div>
+        </div>
+        <FocusTimer />
       </div>
-      <div className="mb-6 inline-flex rounded-xl bg-muted p-1 text-sm">
-        {tabs.map(([k, l]) => (
-          <button key={k} onClick={() => setTab(k)}
-            className={`rounded-lg px-4 py-2 font-medium ${active === k ? "bg-card shadow-soft" : "text-muted-foreground"}`}>{l}</button>
-        ))}
-      </div>
-      {active === "uzdevumi" ? <TaskList key={subj + grade} subject={subj} grade={grade} /> : active === "eseja" ? <Essay /> : <Cards />}
+      {subject ? <SubjectView subject={subject} tasks={tasks.filter((t) => t.subject === subject)} pct={pct} onStart={start} />
+        : <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {cat.subjects.map((s) => {
+            const list = tasks.filter((t) => t.subject === s);
+            const Icon = ICONS[s] ?? BookOpen;
+            const topics = new Set(list.map((t) => t.topic)).size;
+            return (
+              <button key={s} disabled={!list.length} onClick={() => setSubject(s)}
+                className="card-surface flex items-center gap-4 p-5 text-left transition enabled:hover:-translate-y-0.5 disabled:opacity-60">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary-strong"><Icon className="h-6 w-6" /></span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate font-semibold">{s}</span>
+                  <span className="text-sm text-muted-foreground">{list.length ? `${topics} ${topics === 1 ? "tēma" : "tēmas"}` : "Drīz būs"}</span>
+                </span>
+                {list.length > 0 && <Ring pct={pct(list)} />}
+              </button>
+            );
+          })}
+        </div>}
     </AppShell>
   );
 }
 
-function TaskList({ subject, grade }: { subject: string; grade: string }) {
-  const { data } = useSuspenseQuery(learningQuery);
-  const list = remainingTasks(data?.tasks ?? [], data?.attempts ?? []).filter(t => t.subject === subject && t.grades.includes(grade));
-  if (!list.length) return <p className="card-surface p-6 text-muted-foreground">Šim priekšmetam nav neatrisinātu uzdevumu.</p>;
-  return <div className="grid gap-4">{list.map((t, i) => <TaskCard key={t.id} t={t} n={i + 1} />)}</div>;
+function SubjectView({ subject, tasks, pct, onStart }: { subject: string; tasks: LearningTask[]; pct: (l: LearningTask[]) => number; onStart: (topic: string) => void }) {
+  const [tab, setTab] = useState<"uzdevumi" | "eseja" | "kartites">("uzdevumi");
+  const essay = ESSAY_SUBJECTS.includes(subject);
+  const tabs: [typeof tab, string][] = [["uzdevumi", "Uzdevumi"], ...(essay ? [["eseja", "Eseja"] as [typeof tab, string]] : []), ["kartites", "Kartītes"]];
+  const topics = [...new Set(tasks.map((t) => t.topic))];
+  return (
+    <>
+      <div className="mb-6 inline-flex rounded-full bg-muted p-1 text-sm">
+        {tabs.map(([k, l]) => (
+          <button key={k} onClick={() => setTab(k)} className={`rounded-full px-5 py-2 font-semibold ${tab === k ? "bg-card shadow-soft" : "text-muted-foreground"}`}>{l}</button>
+        ))}
+      </div>
+      {tab === "eseja" && essay ? <Essay /> : tab === "kartites" ? <Cards /> : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {topics.map((topic) => {
+            const list = tasks.filter((t) => t.topic === topic);
+            const p = pct(list);
+            return (
+              <button key={topic} onClick={() => onStart(topic)} className="card-surface p-5 text-left transition hover:-translate-y-0.5">
+                <div className="font-semibold">{topic}</div>
+                <div className="mt-1 text-sm text-muted-foreground">{list.length} uzdevumi · {p}% apgūts</div>
+                <div className="mt-4 h-2 rounded-full bg-muted"><div className="h-2 rounded-full bg-primary" style={{ width: `${p}%` }} /></div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </>
+  );
+}
+
+function Session({ subject, topic, tasks, onClose, onAgain }: { subject: string; topic: string; tasks: LearningTask[]; onClose: () => void; onAgain: () => void }) {
+  const [i, setI] = useState(0);
+  const [xp, setXp] = useState(0);
+  const [right, setRight] = useState(0);
+  const done = i >= tasks.length;
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
+      <div className="mx-auto flex w-full max-w-2xl items-center gap-4 px-4 py-4">
+        <button onClick={onClose} aria-label="Aizvērt sesiju" className="grid h-10 w-10 shrink-0 place-items-center rounded-full hover:bg-muted"><X /></button>
+        <div className="h-3 flex-1 rounded-full bg-muted"><div className="h-3 rounded-full bg-primary transition-all" style={{ width: `${(Math.min(i, tasks.length) / tasks.length) * 100}%` }} /></div>
+        <span className="shrink-0 text-sm font-semibold tabular-nums">{Math.min(i + 1, tasks.length)} no {tasks.length}</span>
+      </div>
+      {done ? (
+        <div className="mx-auto grid w-full max-w-md flex-1 place-items-center px-4 text-center">
+          <div>
+            <div className="text-5xl">🎉</div>
+            <h2 className="mt-4 text-2xl font-bold">Sesija pabeigta!</h2>
+            <p className="mt-2 text-muted-foreground">{topic} · {right} no {tasks.length} pareizi</p>
+            <div className="mt-6 font-display text-5xl font-bold text-primary-strong">+{xp} XP</div>
+            <div className="mt-8 grid gap-3">
+              <Button variant="cta" size="lg" className="h-12 rounded-full" onClick={onAgain}><RotateCcw /> Vēlreiz</Button>
+              <Button variant="outline" size="lg" className="h-12 rounded-full" onClick={onClose}>Uz tēmām</Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <SessionTask key={tasks[i]!.id} t={tasks[i]!} subject={subject}
+          onNext={(r) => { if (r?.correct) setRight((n) => n + 1); setXp((x) => x + (r?.xpEarned ?? 0)); setI((n) => n + 1); }} />
+      )}
+    </div>
+  );
+}
+
+function SessionTask({ t, subject, onNext }: { t: LearningTask; subject: string; onNext: (r: AttemptResult | null) => void }) {
+  const [val, setVal] = useState("");
+  const [reveal, setReveal] = useState(false);
+  const [selfPoints, setSelfPoints] = useState(0);
+  const [started] = useState(() => Date.now());
+  const [result, setResult] = useState<AttemptResult | null>(null);
+  const client = useQueryClient();
+  const submit = useServerFn(saveAttempt);
+  const save = useMutation({ mutationFn: submit, onSuccess: (r) => { setResult(r); client.invalidateQueries({ queryKey: ["learning"] }); } });
+  const explain = useMutation({ mutationFn: useServerFn(explainTask) });
+  const send = () => save.mutate({ data: { taskId: t.id, answer: val, seconds: Math.min(10800, Math.round((Date.now() - started) / 1000)), ...(t.type === "open" ? { selfPoints } : {}) } });
+  const label = t.type === "mc" ? "1. daļa · Izvēle" : t.type === "short" ? "Īsā atbilde" : `2. daļa · ${t.points} p.`;
+  const ok = result?.correct;
+  return (
+    <>
+      <div className="flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-2xl px-4 pb-72 pt-4">
+          <div className="text-xs font-semibold uppercase tracking-wider text-primary-strong">{subject} · {label}</div>
+          <p className="mt-3 text-xl font-semibold leading-relaxed">{t.question}</p>
+          {t.type === "mc" && <div className="mt-6 grid gap-3">
+            {strings(t.options).map((o) => {
+              const st = result && o === t.answer ? "border-success bg-success/10" : result && o === val ? "border-destructive bg-destructive/10" : val === o ? "border-primary bg-primary-soft" : "bg-card";
+              return <button key={o} disabled={!!result || save.isPending} onClick={() => setVal(o)} className={`rounded-2xl border-2 p-4 text-left font-medium ${st}`}>{o}</button>;
+            })}
+          </div>}
+          {t.type === "short" && <input autoFocus value={val} disabled={!!result} onChange={(e) => setVal(e.target.value)} placeholder="Tava atbilde"
+            className="mt-6 w-full rounded-2xl border-2 bg-card p-4 text-lg outline-none focus:border-primary" />}
+          {t.type === "open" && <textarea value={val} disabled={reveal} onChange={(e) => setVal(e.target.value)} rows={6} placeholder="Pieraksti risinājumu…"
+            className="mt-6 w-full resize-none rounded-2xl border-2 bg-card p-4 outline-none focus:border-primary" />}
+          {reveal && !result && <div className="card-surface mt-4 p-4 text-sm">
+            <p>{t.explanation}</p>
+            {strings(t.steps).length > 0 && <ol className="mt-2 list-decimal space-y-1 pl-5">{strings(t.steps).map((s) => <li key={s}>{s}</li>)}</ol>}
+            {t.answer && <p className="mt-2 font-semibold">Atbilde: {t.answer}</p>}
+            <label className="mt-3 flex items-center gap-2">Pašnovērtējums:
+              <select aria-label="Pašnovērtējums" value={selfPoints} onChange={(e) => setSelfPoints(Number(e.target.value))} className="rounded-lg border bg-background p-2">
+                {Array.from({ length: t.points + 1 }, (_, k) => <option key={k} value={k}>{k}/{t.points} p.</option>)}
+              </select></label>
+          </div>}
+        </div>
+      </div>
+      {!result ? (
+        <div className="border-t bg-card">
+          <div className="mx-auto max-w-2xl px-4 py-4">
+            {save.isError && <p role="alert" className="mb-2 text-sm text-destructive">{save.error.message}</p>}
+            <Button variant="cta" size="lg" className="h-12 w-full rounded-full text-base" disabled={!val.trim() || save.isPending}
+              onClick={() => t.type === "open" && !reveal ? setReveal(true) : send()}>
+              {save.isPending ? "Saglabā…" : t.type === "open" && !reveal ? "Rādīt risinājumu" : "Pārbaudīt"}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ type: "spring", damping: 26, stiffness: 260 }}
+          className={`fixed inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-[24px] border-t-4 bg-card shadow-soft ${ok ? "border-success" : "border-destructive"}`}>
+          <div className="mx-auto max-w-2xl px-4 py-5">
+            <div className={`flex items-center gap-2 text-lg font-bold ${ok ? "text-success" : "text-destructive"}`}>
+              {ok ? <Check /> : <X />} {ok ? `Pareizi! +${result.xpEarned} XP` : t.type === "open" ? `${result.pointsEarned}/${t.points} p.` : "Nepareizi"}
+            </div>
+            {!ok && t.type !== "open" && <p className="mt-1 text-sm">Pareizā atbilde: <b>{t.answer}</b></p>}
+            <p className="mt-3 text-sm">{t.explanation}</p>
+            {t.type !== "open" && strings(t.steps).length > 0 && <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm">{strings(t.steps).map((s) => <li key={s}>{s}</li>)}</ol>}
+            {!ok && <Button variant="outline" size="sm" className="mt-3 rounded-full" disabled={explain.isPending} onClick={() => explain.mutate({ data: { taskId: t.id, answer: val } })}>
+              <Sparkles /> {explain.isPending ? "Domā…" : "Paskaidro vēlreiz"}</Button>}
+            {explain.data && <div className="mt-3 whitespace-pre-line rounded-xl bg-primary-soft p-3 text-sm">{explain.data.text}</div>}
+            {explain.isError && <p role="alert" className="mt-2 text-sm text-destructive">{explain.error.message}</p>}
+            <Button variant="cta" size="lg" className="mt-5 h-12 w-full rounded-full text-base" onClick={() => onNext(result)}>Tālāk</Button>
+          </div>
+        </motion.div>
+      )}
+    </>
+  );
 }
 
 function Essay() {
