@@ -14,6 +14,7 @@ import { Route as AizmirsuParoliRouteImport } from './routes/aizmirsu-paroli'
 import { Route as CenasRouteImport } from './routes/cenas'
 import { Route as DueliRouteImport } from './routes/dueli'
 import { Route as MacibasRouteImport } from './routes/macibas'
+import { Route as MansPlansRouteImport } from './routes/mans-plans'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PieslegtiesRouteImport } from './routes/pieslegties'
 import { Route as RegistretiesRouteImport } from './routes/registreties'
@@ -45,6 +46,11 @@ const DueliRoute = DueliRouteImport.update({
 const MacibasRoute = MacibasRouteImport.update({
   id: '/macibas',
   path: '/macibas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MansPlansRoute = MansPlansRouteImport.update({
+  id: '/mans-plans',
+  path: '/mans-plans',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/mans-plans': typeof MansPlansRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/mans-plans': typeof MansPlansRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/cenas': typeof CenasRoute
   '/dueli': typeof DueliRoute
   '/macibas': typeof MacibasRoute
+  '/mans-plans': typeof MansPlansRoute
   '/onboarding': typeof OnboardingRoute
   '/pieslegties': typeof PieslegtiesRoute
   '/registreties': typeof RegistretiesRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/cenas'
     | '/dueli'
     | '/macibas'
+    | '/mans-plans'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/cenas'
     | '/dueli'
     | '/macibas'
+    | '/mans-plans'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/cenas'
     | '/dueli'
     | '/macibas'
+    | '/mans-plans'
     | '/onboarding'
     | '/pieslegties'
     | '/registreties'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   CenasRoute: typeof CenasRoute
   DueliRoute: typeof DueliRoute
   MacibasRoute: typeof MacibasRoute
+  MansPlansRoute: typeof MansPlansRoute
   OnboardingRoute: typeof OnboardingRoute
   PieslegtiesRoute: typeof PieslegtiesRoute
   RegistretiesRoute: typeof RegistretiesRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/macibas'
       fullPath: '/macibas'
       preLoaderRoute: typeof MacibasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mans-plans': {
+      id: '/mans-plans'
+      path: '/mans-plans'
+      fullPath: '/mans-plans'
+      preLoaderRoute: typeof MansPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   CenasRoute: CenasRoute,
   DueliRoute: DueliRoute,
   MacibasRoute: MacibasRoute,
+  MansPlansRoute: MansPlansRoute,
   OnboardingRoute: OnboardingRoute,
   PieslegtiesRoute: PieslegtiesRoute,
   RegistretiesRoute: RegistretiesRoute,

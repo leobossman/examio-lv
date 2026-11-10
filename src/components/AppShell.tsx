@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { LayoutDashboard, BookOpen, Swords, Timer, Users, Sparkles } from "lucide-react";
+import { LayoutDashboard, BookOpen, Swords, Timer, Users, Sparkles, Target } from "lucide-react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { learningQuery } from "@/lib/learning-query";
@@ -8,6 +8,7 @@ import { FocusTimer, ThemeToggle } from "./HeaderTools";
 const nav = [
   { to: "/", label: "Panelis", icon: LayoutDashboard },
   { to: "/macibas", label: "Mācības", icon: BookOpen },
+  { to: "/mans-plans", label: "Plāns", icon: Target },
   { to: "/dueli", label: "Dueļi", icon: Swords },
   { to: "/simulators", label: "Simulators", icon: Timer },
   { to: "/vecakiem", label: "Vecākiem", icon: Users },
@@ -42,7 +43,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
-      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-t bg-card md:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-7 border-t bg-card md:hidden">
         {nav.map((n) => (
           <Link key={n.to} to={n.to} activeOptions={{ exact: n.to === "/" }}
             className="flex flex-col items-center gap-1 py-2 text-[10px] text-muted-foreground"
