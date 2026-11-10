@@ -34,3 +34,25 @@ export const saveAttempt = createServerFn({ method: 'POST' }).middleware([requir
     if (result.error) throw new Error('Neizdevās saglabāt mēģinājumu. Iespējams, uzdevums jau atrisināts.');
     return result.data as unknown as AttemptResult;
   });
+export const explainTask = createServerFn({ method: 'POST' }).middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ taskId: z.string().min(1), answer: z.string().max(20000) }))
+  .handler(async ({ data, context }) => {
+    const { data: t } = await context.supabase.from('tasks').select('subject, topic, question, answer, explanation, steps').eq('id', data.taskId).eq('status', 'approved').maybeSingle();
+    if (!t) throw new Error('Uzdevums nav pieejams.');
+    const { generateResponse, GatewayError } = await import('@lovable.dev/ai-gateway');
+    const prompt = `Tu esi pacietīgs pasniedzējs. Skolēns kļūdījās. Izskaidro risinājumu vienkāršāk latviešu valodā, soli pa solim, īsi (līdz 150 vārdiem), bez LaTeX. Norādi, kur, iespējams, bija kļūda.
+Priekšmets: ${t.subject}. Tēma: ${t.topic}.
+Uzdevums: ${t.question}
+Pareizā atbilde: ${t.answer}
+Esošais skaidrojums: ${t.explanation}
+Skolēna atbilde: ${data.answer || '(nav)'}`;
+    try {
+      const res: any = await generateResponse({ model: 'openai/gpt-6-astra', input: prompt, reasoning: { effort: 'low' } } as any);
+      const text = (res.output ?? []).flatMap((o: any) => o.content ?? []).filter((c: any) => c.type === 'output_text').map((c: any) => c.text).join('').trim();
+      if (!text) throw new Error('AI neatbildēja.');
+      return { text };
+    } catch (e) {
+      if (e instanceof GatewayError) { console.error(e.code, e.ids); throw new Error(e.httpStatus === 402 ? 'Beigušies AI kredīti.' : e.httpStatus === 429 ? 'Pārāk daudz pieprasījumu, mēģini vēlāk.' : 'Neizdevās iegūt skaidrojumu.'); }
+      throw e;
+    }
+  });
