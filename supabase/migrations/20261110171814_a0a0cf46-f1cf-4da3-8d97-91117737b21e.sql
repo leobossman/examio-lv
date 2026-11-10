@@ -1,0 +1,15 @@
+ALTER TABLE public.tasks ADD COLUMN status text NOT NULL DEFAULT 'approved' CHECK (status IN ('draft','approved')), ADD COLUMN source text NOT NULL DEFAULT 'manual';
+CREATE TYPE public.app_role AS ENUM ('admin','user');
+CREATE TABLE public.user_roles (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE, role public.app_role NOT NULL, UNIQUE(user_id, role));
+GRANT SELECT ON public.user_roles TO authenticated;
+GRANT ALL ON public.user_roles TO service_role;
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "own roles read" ON public.user_roles FOR SELECT TO authenticated USING (auth.uid() = user_id);
+CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role) RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$ SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = _role) $$;
+GRANT INSERT, UPDATE, DELETE ON public.tasks TO authenticated;
+DROP POLICY IF EXISTS tasks_read ON public.tasks;
+CREATE POLICY tasks_read ON public.tasks FOR SELECT TO authenticated USING (status = 'approved' OR public.has_role(auth.uid(), 'admin'));
+CREATE POLICY tasks_admin_insert ON public.tasks FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY tasks_admin_update ON public.tasks FOR UPDATE TO authenticated USING (public.has_role(auth.uid(), 'admin')) WITH CHECK (public.has_role(auth.uid(), 'admin'));
+CREATE POLICY tasks_admin_delete ON public.tasks FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin') AND status = 'draft');
+INSERT INTO public.user_roles (user_id, role) SELECT id, 'admin' FROM auth.users WHERE id = '8168790d-08f8-4a35-87ee-f2f7f01c5bae' ON CONFLICT DO NOTHING;
