@@ -49,15 +49,15 @@
 
 :root {
   --radius: 1rem;
-  /* warm white bg, ink #0F2A3A */
-  --background: oklch(0.985 0.008 80);
+  /* Light surfaces and brand accents */
+  --background: #fff;
   --foreground: oklch(0.27 0.045 230);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.27 0.045 230);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.27 0.045 230);
   /* Turquoise #0FB5A8 */
-  --primary: oklch(0.69 0.12 183);
+  --primary: #0FB5A8;
   --primary-foreground: oklch(0.2 0.04 230);
   --primary-strong: oklch(0.5 0.1 185);
   --primary-soft: oklch(0.95 0.035 183);
@@ -65,8 +65,8 @@
   --secondary-foreground: oklch(0.27 0.045 230);
   --muted: oklch(0.955 0.01 80);
   --muted-foreground: oklch(0.47 0.03 230);
-  /* Sunset orange #FF7A3D — only main CTAs */
-  --accent: oklch(0.72 0.18 45);
+  /* Primary action */
+  --accent: #FF7A3D;
   --accent-foreground: oklch(0.2 0.04 230);
   --accent-soft: oklch(0.95 0.04 50);
   --success: oklch(0.55 0.14 150);
@@ -137,4 +137,57 @@
   border: 1px solid var(--color-border);
   border-radius: 20px;
   box-shadow: var(--shadow-soft);
+}
+
+@layer components {
+  .study-cover {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(1.5rem, 5vw, 3.5rem);
+    border: 1px solid var(--border);
+    border-radius: 1.5rem;
+    background: var(--primary-soft);
+    overflow-wrap: anywhere;
+  }
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+  }
+  .panel-title > svg { width: 1.3rem; color: var(--primary-strong); }
+  .study-diagram {
+    display: none;
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 39%;
+    overflow: hidden;
+    background-image: linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+                      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 24px 24px;
+    --grid-line: color-mix(in srgb, var(--primary-strong) 14%, transparent);
+  }
+  .study-diagram i, .study-diagram b, .study-diagram span { position: absolute; }
+  .study-diagram i {
+    width: 11rem; height: 11rem; right: 10%; top: 20%;
+    border-radius: 50%; background: var(--accent);
+  }
+  .study-diagram b {
+    width: 15rem; height: 15rem; left: 2%; bottom: -14%;
+    background: var(--primary-strong); transform: rotate(-13deg);
+    clip-path: polygon(0 0, 100% 100%, 0 100%, 0 0, 16% 39%, 16% 84%, 61% 84%, 16% 39%);
+  }
+  .study-diagram span {
+    width: 12rem; height: 12rem; right: -15%; top: -38%;
+    border: 2px solid var(--primary-strong); border-radius: 50%;
+  }
+  @media (min-width: 48rem) {
+    .study-diagram { display: block; }
+    .study-cover > :first-child { max-width: 57%; }
+  }
+}
+@layer base {
+  :focus-visible { outline: 2px solid var(--primary-strong); outline-offset: 3px; }
 }
